@@ -1,0 +1,64 @@
+@model FlightClient
+
+@{
+    ViewData["Title"] = "Edit client";
+}
+
+
+<h1>Edit Client</h1>
+
+<h4> @Html.DisplayFor(model => model.Name)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="PhotoBase64" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label">BirthDate</label>
+                <input asp-for="BirthDate" class="form-control" />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+
+
+             <div class="form-group">
+                <label asp-for="PassaportNumber" class="control-label">Passaport Number</label>
+                <input asp-for="PassaportNumber" class="form-control" />
+                <span asp-validation-for="PassaportNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Nationality" class="control-label">Nationality</label>
+                <input asp-for="Nationality" class="form-control" />
+                <span asp-validation-for="Nationality" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Photo</label>
+                <img src="@Model.PhotoBase64"/>
+            </div>
+            <div class="form-group">
+                <input type="file" id="file" name="file" accept="image/png, image/jpeg, image/jpg" />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Return</a>
+</div>
+
+
+
+
+
+

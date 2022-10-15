@@ -1,0 +1,65 @@
+﻿@page "/flightclients"
+
+@using Backoffice.Data
+
+@using System.Net.Http
+@using Newtonsoft.Json
+@using System.Collections.Generic
+
+
+@inject FlightClientService flightClientService
+
+
+
+<h1>Flight Clients</h1>
+
+<p>Data directly from database.</p>
+
+@if (flightClients is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Birth date</th>
+                <th>Passaport Number</th>
+                <th>Nationality</th>
+                <th>Photo</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in flightClients)
+            {
+                <tr>
+                    <td>@client.Name</td>
+                    <td>@client.BirthDate.ToShortDateString()</td>
+                    <td>@client.PassaportNumber</td>
+                    <td>@client.Nationality</td>
+                    <td>
+                        <img src="@client.PhotoBase64" />
+                    </td>
+                    <td>
+                        <a href='/editFlightClient/@client.Id'>Edit</a>
+                        <a href='/deleteFlightClient/@client.Id'>Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+     List<FlightClient> flightClients;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        flightClients = await Task.Run(() =>  flightClientService.GetAllFlightClientsAsync());
+    }
+}
+

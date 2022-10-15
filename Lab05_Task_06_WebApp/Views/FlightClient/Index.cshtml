@@ -1,0 +1,54 @@
+﻿
+@using WebApp.Models
+@model FlightClient[]
+
+@{
+
+    ViewData["Title"] = "Flight Clients List"; 
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>Flight Clients.</p>
+
+@if (Model is null)
+{
+    <p><em>No data...</em></p>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Birth date</th>
+                <th>Passaport Number</th>
+                <th>Nationality</th>
+                <th>Photo</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var client in Model)
+            {
+                <tr>
+                    <td>@client.Name</td>
+                    <td>@client.BirthDate.ToShortDateString()</td>
+                    <td>@client.PassaportNumber</td>
+                    <td>@client.Nationality</td>
+                    <td>
+                        <img src="@client.PhotoBase64" style="width:50px; height:auto;"/>
+                    </td>
+                    <td> 
+                         @Html.ActionLink("Edit", "Edit", new { id=client.Id })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+}
+
+
