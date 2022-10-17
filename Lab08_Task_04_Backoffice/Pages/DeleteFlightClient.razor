@@ -1,0 +1,66 @@
+@page "/deleteFlightClient/{Id}"
+@using Backoffice.Data
+@inject FlightClientService flightClientService
+@inject NavigationManager NavigationManager
+
+<h2>Delete Flight Client</h2>
+<hr />
+<h3>Are you sure want to delete this?</h3>
+<form>
+    <div class="row">
+        <div class=" col-md-8">
+            <div class="form-group">
+                <label>FlightClient Id:</label>
+                <label>@flightClient.Id</label>
+            </div>
+            <div class="form-group">
+                <label>FlightClient Name:</label>
+                <label>@flightClient.Name</label>
+            </div>
+            <div class="form-group">
+                <label>Birthdate:</label>
+                <label>@flightClient.BirthDate</label>
+            </div>
+            <div class="form-group">
+                <label>Passaport Number:</label>
+                <label>@flightClient.PassaportNumber</label>
+            </div>
+            <div class="form-group">
+                <label>Nationality:</label>
+                <label>@flightClient.Nationality</label>
+            </div>
+            <div class="form-group">
+                <label>Photo:</label>
+                <img src="@flightClient.PhotoBase64" />
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-danger" @onclick="@DeleteClient" value="Delete" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    FlightClient flightClient = new FlightClient();
+    protected override async Task OnInitializedAsync()
+    {
+        flightClient = await Task.Run(() => flightClientService.GetFlightClientAsync(Convert.ToInt32(Id)));
+    }
+    protected async void DeleteClient()
+    {
+        await flightClientService.DeleteFlightClientAsync(flightClient);
+        NavigationManager.NavigateTo("flightclients");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("flightclients");
+    }
+}

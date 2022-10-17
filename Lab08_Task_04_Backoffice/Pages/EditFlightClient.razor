@@ -1,0 +1,94 @@
+@page "/editFlightClient/{Id}"
+@using Backoffice.Data
+@using System.IO
+@inject FlightClientService flightClientService
+@inject NavigationManager NavigationManager
+
+<h2>Edit Flight Client</h2>
+<hr />
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <input form="Id" class="form-control" @bind="@flightClient.Id" />
+            </div>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input form="Name" class="form-control" @bind="@flightClient.Name" />
+            </div>
+            <div class="form-group">
+                <label for="BirthDate" class="control-label">Birthdate</label>
+                <input form="BirthDate" class="form-control" @bind="@flightClient.BirthDate" />
+            </div>
+            <div class="form-group">
+                <label for="PassaportNumber" class="control-label">Passaport Number</label>
+                <input form="PassaportNumber" class="form-control" @bind="@flightClient.PassaportNumber" />
+            </div>
+            <div class="form-group">
+                <label for="Nationality" class="control-label">Nationality</label>
+                <input form="Nationality" class="form-control" @bind="@flightClient.Nationality" />
+            </div>
+            <div class="form-group">
+                <label for="PhotoBase64" class="control-label">Photo</label>
+                <br>
+                <img src="@imageFile"/>
+                <br>
+                <!-- <InputFile OnChange="@LoadImage()"/> -->
+                <InputFile OnChange="@((InputFileChangeEventArgs args) => LoadImage(args, @flightClient))" multiple  />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateFlightClient" value="Update" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    string imageFile;    
+    
+    FlightClient flightClient = new FlightClient();
+    protected override async Task OnInitializedAsync()
+    {
+        flightClient = await Task.Run(() => flightClientService.GetFlightClientAsync(Convert.ToInt32(Id)));
+    }
+    protected async void UpdateFlightClient()
+    {
+        await flightClientService.UpdateFlightClientAsync(flightClient);
+        NavigationManager.NavigateTo("flightclients");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("flightclients");
+    }
+
+
+    // InputFileChangeEventArgs require .net5.0 or higher
+     public async Task LoadImage(InputFileChangeEventArgs inputFileChangeEventArgs, FlightClient flightClient)
+    {
+        var image = await inputFileChangeEventArgs.File.RequestImageFileAsync("image/png", 100, 100);
+
+        using Stream imageStream = image.OpenReadStream(1024 * 1024 * 10);
+        
+        using MemoryStream ms = new MemoryStream();
+        
+        //copy imageStream to Memory stream
+        //Not recomended for Microsoft Azure Blob Storage use blob container client
+        await imageStream.CopyToAsync(ms);
+
+        //convert stream to base64
+        imageFile = $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+        flightClient.PhotoBase64 = imageFile;
+
+        StateHasChanged();
+    }
+}
