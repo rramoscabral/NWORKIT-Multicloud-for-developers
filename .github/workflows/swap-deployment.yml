@@ -1,0 +1,28 @@
+name: swap-deployment
+
+on:
+  #push:
+  #  branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  swap-to-green-slot:
+    runs-on: ubuntu-latest
+    environment: Dev
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+      
+    - name: 'Login via Azure CLI'
+      uses: Azure/login@v1.4.6
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Swap'
+      uses: Azure/cli@v1
+      with:
+        inlineScript: |
+                    az webapp deployment slot swap -g ${{ secrets.AZURE_RESOURCE_GROUP }} -n ${{ secrets.AZURE_WEBAPP_NAME }} --slot ${{ secrets.AZURE_WEBAPP_SLOT_NAME }} --target-slot production
