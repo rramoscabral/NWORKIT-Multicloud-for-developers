@@ -1,9 +1,9 @@
-name: Deploy ASP.Net Core 6 to an Azure Web App
+name: Deploy ASP.Net Core 6 to an Azure Web App greendeployment
 
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
   AZURE_WEBAPP_PACKAGE_PATH: '.'
-  DOTNET_VERSION: '5'
+  DOTNET_VERSION: '6.0.x'
 
 on:
   #push:
@@ -21,9 +21,11 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
+        
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: 'preview'
       
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
@@ -45,7 +47,7 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
-  deploy:
+  deploy-to-green-slot:
     permissions:
       contents: none
     runs-on: ubuntu-latest
@@ -59,6 +61,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
+    
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -66,4 +69,5 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          slot-name: ${{ secrets.AZURE_WEBAPP_SLOT_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
